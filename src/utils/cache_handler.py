@@ -5,10 +5,9 @@ import numpy as np
 import os
 import json
 
-from loguru import logger
 from typing import Dict, Union, List
-from entity.question_result import ChoiceQuestionResult, ShortAnswerQuestionResult
-from entity.subject import SubjectType
+from src.entity.question_result import ChoiceQuestionResult, ShortAnswerQuestionResult
+from src.entity.subject import SubjectType
 
 
 class CacheHandler:
@@ -48,11 +47,9 @@ class CacheHandler:
         """
         if not SubjectType.validate_subject_type(subject_type):
             return
-        logger.info("读取本地题库缓存")
 
         existing_data = self.get_question_cache()
 
-        logger.info("开始缓存题目")
 
         if isinstance(question_result, ChoiceQuestionResult):
             result = question_result.get_choice_question()
@@ -63,7 +60,6 @@ class CacheHandler:
 
         with open(self._QUESTION_PATH, 'w', encoding='utf-8') as f:
             json.dump(existing_data, f)
-        logger.info("题目缓存结束")
 
     def get_question_cache(self) -> Dict:
         """
@@ -82,7 +78,6 @@ class CacheHandler:
         """
         移除最后一个问题
         """
-        logger.info("操作删除问题")
         question_cache = self.get_question_cache()
         subject_questions = question_cache[subject_type]
         subject_questions.pop()
@@ -95,18 +90,15 @@ class CacheHandler:
         将标题、字幕、字幕总结进行缓存
         :return: None
         """
-        logger.info("读取本地字幕缓存")
 
         existing_data = self.get_subtitle_cache()
 
-        logger.info("开始缓存字幕")
 
         result = {b_cid: {"title": title, "subtitle": subtitle, "summary": summary}}
         existing_data.append(result)
 
         with open(self._SUBTITLE_PATH, 'w', encoding='utf-8') as f:
             json.dump(existing_data, f)
-        logger.info("题目缓存结束")
         return {
             "title": title,  # 视频标题
             "subtitle": subtitle,  # 字幕内容

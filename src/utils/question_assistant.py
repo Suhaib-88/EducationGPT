@@ -1,8 +1,8 @@
 from src.common.config import Config
 from src.prompts.structured_prompts import (QUESTION_CHOICE_PROMPT,VERIFY_ANSWER_PROMPT,QUESTION_SHORT_ANSWER_PROMPT )
-from utils.cache_handler import CacheHandler
-from entity.subject import SubjectType
-from entity.question_result import ChoiceQuestionResult, ShortAnswerQuestionResult
+from src.utils.cache_handler import CacheHandler
+from src.entity.subject import SubjectType
+from src.entity.question_result import ChoiceQuestionResult, ShortAnswerQuestionResult
 
 class QuestionAssistant:
     def __init__(self) -> None:

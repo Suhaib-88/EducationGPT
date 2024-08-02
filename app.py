@@ -2,6 +2,10 @@ import gradio as gr
 import pandas as pd
 from src.service.initialize import set_env
 from src.service.score_analyzer_service import execute_score_analyzer,update_result
+from src.service.qa_with_video_service import generate_qa
+from src.service.create_summary_service import create_summary
+from src.service.generate_questions_service import generate_question
+from src.service.generate_questions_service import remove_question
 
 with gr.Blocks(theme= gr.themes.Soft()) as demo:
     gr.Markdown("Welcome to EducationGPT")
@@ -77,17 +81,13 @@ with gr.Blocks(theme= gr.themes.Soft()) as demo:
         gr.Markdown("## Online Course Summary")
         with gr.Row(equal_height=True):
             with gr.Column():
-                bv_input= gr.Textbox(placeholder="Please Enter the video link for which you want to generate a summary",
+                yt_input= gr.Textbox(placeholder="Please Enter the video link for which you want to generate a summary",
                                      label="",
                                      value="",
                                      interactive=True,
                                      max_lines=4)
                 
-                p_input= gr.Textbox(placeholder="Please enter the sub-p number",
-                                    label= "enter the sub number",
-                                    value="0",
-                                    interactive=True,
-                                    max_lines=4)
+
                 summary_button= gr.Button('Start summary')
 
                 with gr.Box():
@@ -97,19 +97,36 @@ with gr.Blocks(theme= gr.themes.Soft()) as demo:
                         qa_input= gr.Textbox(label="Chat with video", interactive= True, placeholder= "Enter your question here")
 
                         with gr.Row():
-                            clear= gr.ClearButton([qa_input,chatbot],value_="clear")
+                            #clear= gr.ClearButton([qa_input,chatbot],value_="clear")
                             send_button= gr.Button(value="send")
 
             with gr.Column():
                 info_output= gr.Textbox(interactive=False,lines=25,label= "Video subtitles", show_label=True)
                 summary_output=gr.Textbox(interactive=False, lines=10,label= "AI summarize", show_label=True)
 
-                summary_button.click(fn= create_summary, inputs=[bv_input,p_input], outputs=[info_output, summary_output])
+                summary_button.click(fn= create_summary, inputs=[yt_input], outputs=[info_output, summary_output])
                 send_button.click(fn=generate_qa,inputs=[info_output,qa_input,chatbot],outputs=[qa_input,chatbot])
 
+    """
+    Online QA tool
+    """
+    with gr.Tab("Online QA Tool"):
+        gr.Markdown("## Question generation")
+        with gr.Box():
+            with gr.Row():
 
+                show_question= gr.Textbox(interactive=False,lines=5,label='display question',show_label=True)
+        
+            with gr.Row():
+                with gr.Column():
+                    question_type= gr.Radio(choices=['',""], type= "value", interactive=True, label="",show_label=True)
+                    subject_type= gr.Radio(choices=subject_types, type="",value="History",interactive=True,label='',show_label=True)
 
-
-
+                with gr.Column():
+                    desc_input= gr.Textbox(placeholder="",label="")
+                    generate_button= gr.Button(value="",variant="primary")
+                    remove_button= gr.ClearButton(value="",variant="stop")
+                    remove_button.click(fn=remove_question,inputs=[show_question,subject_type], outputs=show_question)
+                    generate_button.click(fn=generate_question,inputs=[question_type,desc_input,subject_type],outputs=show_question)
 if __name__=='__main__':
     demo.launch()
